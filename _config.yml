@@ -59,6 +59,9 @@ pagination_dir: page
 include: null
 exclude: null
 ignore: null
-theme: icarus
+theme: next
 deploy:
-  type: ''
+  type: git
+  repo: https://github.com/Zerokei/Zerokei.github.io
+  # example, https://github.com/hexojs/hexojs.github.io
+  branch: gh-pages
