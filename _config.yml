@@ -63,5 +63,5 @@ theme: next
 deploy:
   type: git
   repo: https://github.com/Zerokei/Zerokei.github.io
-  # example, https://github.com/hexojs/hexojs.github.io
-  branch: gh-pages
+  branch: main
+  token: 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
