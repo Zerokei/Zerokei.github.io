@@ -20,28 +20,54 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Zerokei&#39;s Personal Site">
-<meta property="og:url" content="http://example.com/index.html">
+  <meta name="description" content="什么是Write Buffers假设我们有数据需要写入，由运算单元传递至L1 Cache，但是L1 Cache里面没有储存该内容（即miss了），那么就要去L2 Cache中找。若L2 Cache中仍然没有，则需要访问更后面的存储结构。 这样会造成十分漫长的等待。 但是如果在L1 Cache和L2 Cache中增设一个write buffer，则当L1 Cache将写入数据写进write buff">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Merging Write Buffers">
+<meta property="og:url" content="http://example.com/2022/03/23/merging-write-buffers/index.html">
 <meta property="og:site_name" content="Zerokei&#39;s Personal Site">
+<meta property="og:description" content="什么是Write Buffers假设我们有数据需要写入，由运算单元传递至L1 Cache，但是L1 Cache里面没有储存该内容（即miss了），那么就要去L2 Cache中找。若L2 Cache中仍然没有，则需要访问更后面的存储结构。 这样会造成十分漫长的等待。 但是如果在L1 Cache和L2 Cache中增设一个write buffer，则当L1 Cache将写入数据写进write buff">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://s2.loli.net/2022/03/23/DqouTH7zBi32ch5.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/23/yQs6bR7cCF3V5oZ.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/23/5RqV4nCiwDdLIHk.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/23/UpN9P16jSLtGOsT.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/23/WAXyg7q9D6c8dNp.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/23/oTiXQhPwUyqnxrM.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/23/8MqHaKLegoF1G9j.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/23/dC6Xmo8RWH4hgPj.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/23/tudFAMrXEpZgcNw.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/23/gX6xWRaFVwsqLnI.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/23/CbLE56fNrtB3WgF.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/23/XCVxvbY8u4rtwl5.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/23/7QPVfKxqMI1wF2U.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/23/EuQ3inqwABKaH5F.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/23/Shr5zGov8UpDMeJ.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/23/lyM4Q6pWTCO8Ajb.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/23/XCVxvbY8u4rtwl5.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/23/qRkQMn9cibAwJTo.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/23/HtiTd69JrEZgVme.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/23/zHqWIGnZ8aLkXto.png">
+<meta property="og:image" content="https://s2.loli.net/2022/03/23/cIoskliCmMpbFHq.png">
+<meta property="article:published_time" content="2022-03-23T07:46:31.170Z">
+<meta property="article:modified_time" content="2022-03-23T11:10:27.271Z">
 <meta property="article:author" content="Zerokei">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2022/03/23/DqouTH7zBi32ch5.png">
 
-<link rel="canonical" href="http://example.com/">
+<link rel="canonical" href="http://example.com/2022/03/23/merging-write-buffers/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'en'
   };
 </script>
 
-  <title>Zerokei's Personal Site</title>
+  <title>Merging Write Buffers | Zerokei's Personal Site</title>
   
 
 
@@ -154,9 +180,10 @@
         <div class="content-wrap">
           
 
-          <div class="content index posts-expand">
+          <div class="content post posts-expand">
             
-      
+
+    
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
@@ -172,10 +199,9 @@
       <meta itemprop="name" content="Zerokei's Personal Site">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/03/23/merging-write-buffers/" class="post-title-link" itemprop="url">Merging Write Buffers</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          Merging Write Buffers
+        </h1>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -199,7 +225,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="什么是Write-Buffers"><a href="#什么是Write-Buffers" class="headerlink" title="什么是Write Buffers"></a>什么是Write Buffers</h1><p>假设我们有数据需要写入，由运算单元传递至L1 Cache，但是L1 Cache里面没有储存该内容（即miss了），那么就要去L2 Cache中找。<br>若L2 Cache中仍然没有，则需要访问更后面的存储结构。<br><img src="https://s2.loli.net/2022/03/23/DqouTH7zBi32ch5.png"> <br>这样会造成十分漫长的等待。<br><img src="https://s2.loli.net/2022/03/23/yQs6bR7cCF3V5oZ.png"> <br>但是如果在L1 Cache和L2 Cache中增设一个write buffer，则当L1 Cache将写入数据写进write buffer后，即可不停转地进行下面的任务。<br><img src="https://s2.loli.net/2022/03/23/5RqV4nCiwDdLIHk.png"> </p>
+        <h1 id="什么是Write-Buffers"><a href="#什么是Write-Buffers" class="headerlink" title="什么是Write Buffers"></a>什么是Write Buffers</h1><p>假设我们有数据需要写入，由运算单元传递至L1 Cache，但是L1 Cache里面没有储存该内容（即miss了），那么就要去L2 Cache中找。<br>若L2 Cache中仍然没有，则需要访问更后面的存储结构。<br><img src="https://s2.loli.net/2022/03/23/DqouTH7zBi32ch5.png"> <br>这样会造成十分漫长的等待。<br><img src="https://s2.loli.net/2022/03/23/yQs6bR7cCF3V5oZ.png"> <br>但是如果在L1 Cache和L2 Cache中增设一个write buffer，则当L1 Cache将写入数据写进write buffer后，即可不停转地进行下面的任务。<br><img src="https://s2.loli.net/2022/03/23/5RqV4nCiwDdLIHk.png"> </p>
 <h1 id="Write-Buffers的缺陷"><a href="#Write-Buffers的缺陷" class="headerlink" title="Write Buffers的缺陷"></a>Write Buffers的缺陷</h1><p>其实我们可以很快地发现，Write Buffers本身并不能很好地解决写入等待的问题，因为若有频繁的写入操作，Write Buffers可能会被很快地填满。<br><img src="https://s2.loli.net/2022/03/23/UpN9P16jSLtGOsT.png"><br>我们或许可以尝试增大它的容量。<br><img src="https://s2.loli.net/2022/03/23/WAXyg7q9D6c8dNp.png"><br>但是可能在面对大量的写入操作时，仍然不能起到一个很好的效果。<br><img src="https://s2.loli.net/2022/03/23/oTiXQhPwUyqnxrM.png"></p>
 <h1 id="Merging-Write-Buffers"><a href="#Merging-Write-Buffers" class="headerlink" title="Merging Write Buffers"></a>Merging Write Buffers</h1><p>这时，我们或许可以尝试合并Write Buffers。即增大它的吞吐量（严格的来说是单次传递到下一层的数据量）<br><img src="https://s2.loli.net/2022/03/23/8MqHaKLegoF1G9j.png"><br>清空上面的第一行，只需要一次就行（因为他们被合并成了一条数据）<br>而清空第三行可能就需要四次。<br>特别是当存在循环写入的时候，我们的合并写入可以起到关键性的优化。（在后面的例子中会讲到）</p>
 <h1 id="Merging-Write-Buffers的限制"><a href="#Merging-Write-Buffers的限制" class="headerlink" title="Merging Write Buffers的限制"></a>Merging Write Buffers的限制</h1><ol>
@@ -217,90 +243,30 @@
 <p>有人可能会觉得这个条件太严苛了，但实际上我们确实很多时候进行的就是循环遍历数据的操作，而在此时若能把循环遍历的数据进行合并写入，就能达到很好的优化效果。</p>
 <h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p><a target="_blank" rel="noopener" href="http://ifeve.com/writecombining/">合并写(write combining)-并发编程网</a></p>
 <h2 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> size 2e9</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> mask 1023</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">fun1</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="type">uint64_t</span> *a = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line">    <span class="type">uint64_t</span> *b = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line">    <span class="type">uint64_t</span> *c = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line">    <span class="type">uint64_t</span> *d = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line">    <span class="type">uint64_t</span> *e = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line">    <span class="type">uint64_t</span> *f = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line">    <span class="type">uint64_t</span> *g = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line">    <span class="type">uint64_t</span> *h = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line"></span><br><span class="line">    <span class="type">uint64_t</span> i = size;</span><br><span class="line">    <span class="type">int</span> id;</span><br><span class="line">    <span class="keyword">while</span>(i--)&#123;</span><br><span class="line">        id = (<span class="type">int</span>)i &amp; mask;</span><br><span class="line">        a[id] = i;</span><br><span class="line">        b[id] = i;</span><br><span class="line">        c[id] = i;</span><br><span class="line">        d[id] = i;</span><br><span class="line">        e[id] = i;</span><br><span class="line">        f[id] = i;</span><br><span class="line">        g[id] = i;</span><br><span class="line">        h[id] = i;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">delete</span> [] a;</span><br><span class="line">    <span class="keyword">delete</span> [] b;</span><br><span class="line">    <span class="keyword">delete</span> [] c;</span><br><span class="line">    <span class="keyword">delete</span> [] d;</span><br><span class="line">    <span class="keyword">delete</span> [] e;</span><br><span class="line">    <span class="keyword">delete</span> [] f;</span><br><span class="line">    <span class="keyword">delete</span> [] g;</span><br><span class="line">    <span class="keyword">delete</span> [] h;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">clock</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">fun2</span><span class="params">()</span></span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="type">uint64_t</span> *a = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line">    <span class="type">uint64_t</span> *b = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line">    <span class="type">uint64_t</span> *c = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line">    <span class="type">uint64_t</span> *d = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line">    <span class="type">uint64_t</span> *e = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line">    <span class="type">uint64_t</span> *f = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line">    <span class="type">uint64_t</span> *g = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line">    <span class="type">uint64_t</span> *h = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line"></span><br><span class="line">    <span class="type">uint64_t</span> i = size;</span><br><span class="line">    <span class="type">int</span> id;</span><br><span class="line">    <span class="keyword">while</span>(i--)&#123;</span><br><span class="line">        id = (<span class="type">int</span>)i &amp; mask;</span><br><span class="line">        a[id] = i;</span><br><span class="line">        b[id] = i;</span><br><span class="line">        c[id] = i;</span><br><span class="line">        d[id] = i;</span><br><span class="line">    &#125;</span><br><span class="line">    i = size;</span><br><span class="line">    <span class="keyword">while</span>(i--)&#123;</span><br><span class="line">        id = (<span class="type">int</span>)i &amp; mask;</span><br><span class="line">        e[id] = i;</span><br><span class="line">        f[id] = i;</span><br><span class="line">        g[id] = i;</span><br><span class="line">        h[id] = i;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">delete</span> [] a;</span><br><span class="line">    <span class="keyword">delete</span> [] b;</span><br><span class="line">    <span class="keyword">delete</span> [] c;</span><br><span class="line">    <span class="keyword">delete</span> [] d;</span><br><span class="line">    <span class="keyword">delete</span> [] e;</span><br><span class="line">    <span class="keyword">delete</span> [] f;</span><br><span class="line">    <span class="keyword">delete</span> [] g;</span><br><span class="line">    <span class="keyword">delete</span> [] h;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">clock</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">fun3</span><span class="params">()</span></span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="type">uint64_t</span> *a = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line">    <span class="type">uint64_t</span> *b = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line">    <span class="type">uint64_t</span> *c = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line">    <span class="type">uint64_t</span> *d = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line">    <span class="type">uint64_t</span> *e = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line">    <span class="type">uint64_t</span> *f = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line">    <span class="type">uint64_t</span> *g = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line">    <span class="type">uint64_t</span> *h = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line"></span><br><span class="line">    <span class="type">uint64_t</span> i = size;</span><br><span class="line">    <span class="type">int</span> id;</span><br><span class="line">    <span class="keyword">while</span>(i--)&#123;</span><br><span class="line">        id = (<span class="type">int</span>)i &amp; mask;</span><br><span class="line">        a[id] = i;</span><br><span class="line">        b[id] = i;</span><br><span class="line">    &#125;</span><br><span class="line">    i = size;</span><br><span class="line">    <span class="keyword">while</span>(i--)&#123;</span><br><span class="line">        id = (<span class="type">int</span>)i &amp; mask;</span><br><span class="line">        c[id] = i;</span><br><span class="line">        d[id] = i;</span><br><span class="line">    &#125;</span><br><span class="line">    i = size;</span><br><span class="line">    <span class="keyword">while</span>(i--)&#123;</span><br><span class="line">        id = (<span class="type">int</span>)i &amp; mask;</span><br><span class="line">        e[id] = i;</span><br><span class="line">        f[id] = i;</span><br><span class="line">    &#125;</span><br><span class="line">    i = size;</span><br><span class="line">    <span class="keyword">while</span>(i--)&#123;</span><br><span class="line">        id = (<span class="type">int</span>)i &amp; mask;</span><br><span class="line">        g[id] = i;</span><br><span class="line">        h[id] = i;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">delete</span> [] a;</span><br><span class="line">    <span class="keyword">delete</span> [] b;</span><br><span class="line">    <span class="keyword">delete</span> [] c;</span><br><span class="line">    <span class="keyword">delete</span> [] d;</span><br><span class="line">    <span class="keyword">delete</span> [] e;</span><br><span class="line">    <span class="keyword">delete</span> [] f;</span><br><span class="line">    <span class="keyword">delete</span> [] g;</span><br><span class="line">    <span class="keyword">delete</span> [] h;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">clock</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">fun4</span><span class="params">()</span></span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="type">uint64_t</span> *a = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line">    <span class="type">uint64_t</span> *b = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line">    <span class="type">uint64_t</span> *c = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line">    <span class="type">uint64_t</span> *d = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line">    <span class="type">uint64_t</span> *e = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line">    <span class="type">uint64_t</span> *f = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line">    <span class="type">uint64_t</span> *g = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line">    <span class="type">uint64_t</span> *h = <span class="keyword">new</span> <span class="type">uint64_t</span>[mask+<span class="number">1</span>];</span><br><span class="line"></span><br><span class="line">    <span class="type">uint64_t</span> i = size;</span><br><span class="line">    <span class="type">int</span> id;</span><br><span class="line">    <span class="keyword">while</span>(i--)&#123;</span><br><span class="line">        id = (<span class="type">int</span>)i &amp; mask;</span><br><span class="line">        a[id] = i;</span><br><span class="line">        b[id] = i;</span><br><span class="line">        c[id] = i;</span><br><span class="line">        d[id] = i;</span><br><span class="line">        g[id] = i;</span><br><span class="line">        h[id] = i;</span><br><span class="line">    &#125;</span><br><span class="line">    i = size;</span><br><span class="line">    <span class="keyword">while</span>(i--)&#123;</span><br><span class="line">        id = (<span class="type">int</span>)i &amp; mask;</span><br><span class="line">        e[id] = i;</span><br><span class="line">        f[id] = i;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">delete</span> [] a;</span><br><span class="line">    <span class="keyword">delete</span> [] b;</span><br><span class="line">    <span class="keyword">delete</span> [] c;</span><br><span class="line">    <span class="keyword">delete</span> [] d;</span><br><span class="line">    <span class="keyword">delete</span> [] e;</span><br><span class="line">    <span class="keyword">delete</span> [] f;</span><br><span class="line">    <span class="keyword">delete</span> [] g;</span><br><span class="line">    <span class="keyword">delete</span> [] h;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">clock</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="type">int</span> start = <span class="built_in">clock</span>();</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;(8)&quot;</span>&lt;&lt;<span class="number">1.0</span>*(<span class="built_in">fun1</span>()-start)/CLOCKS_PER_SEC&lt;&lt;endl;</span><br><span class="line">    start = <span class="built_in">clock</span>();</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;(4+4)&quot;</span>&lt;&lt;<span class="number">1.0</span>*(<span class="built_in">fun2</span>()-start)/CLOCKS_PER_SEC&lt;&lt;endl;</span><br><span class="line">    start = <span class="built_in">clock</span>();</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;(2+2+2+2)&quot;</span>&lt;&lt;<span class="number">1.0</span>*(<span class="built_in">fun3</span>()-start)/CLOCKS_PER_SEC&lt;&lt;endl;</span><br><span class="line">    start = <span class="built_in">clock</span>();</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;(6+2)&quot;</span>&lt;&lt;<span class="number">1.0</span>*(<span class="built_in">fun4</span>()-start)/CLOCKS_PER_SEC&lt;&lt;endl;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-      
     </div>
 
     
     
     
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/02/hello-world/">
+        
 
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Zerokei">
-      <meta itemprop="description" content="">
-    </span>
 
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Zerokei's Personal Site">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/03/02/hello-world/" class="post-title-link" itemprop="url">Hello World</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2022-03-02 16:08:00" itemprop="dateCreated datePublished" datetime="2022-03-02T16:08:00+08:00">2022-03-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-03-23 13:46:50" itemprop="dateModified" datetime="2022-03-23T13:46:50+08:00">2022-03-23</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Here is Zerokei~</p>
-<h1 id="技术文章"><a href="#技术文章" class="headerlink" title="技术文章"></a>技术文章</h1><p><a href="../slides/merge_write_buffers/index.html">merge write buffers</a></p>
-<h1 id="My-Notion-Blog"><a href="#My-Notion-Blog" class="headerlink" title="My Notion Blog"></a>My Notion Blog</h1><p>这是我的<a target="_blank" rel="noopener" href="https://zerokei.notion.site/">Notion Blog</a><br>平常会在这里更新我的周报和随笔~</p>
-<h2 id="周报列表"><a href="#周报列表" class="headerlink" title="周报列表"></a>周报列表</h2><p><a target="_blank" rel="noopener" href="https://zerokei.notion.site/011-fb35794043004174abaddfa9ad426845">柏油的周报-011期</a><br><a target="_blank" rel="noopener" href="https://zerokei.notion.site/010-bdefa29abc8f47afb927579cf39985bc">柏油的周报-010期</a><br><a target="_blank" rel="noopener" href="https://zerokei.notion.site/009-fde2d330ed1a4f888e1785e702786c1a">柏油的周报-009期</a><br><a target="_blank" rel="noopener" href="https://zerokei.notion.site/008-cdf59531c5884a6f954e39509f662cac">柏油的周报-008期</a><br><a target="_blank" rel="noopener" href="https://zerokei.notion.site/007-b04634ff92cd41fba0540d74ab8c9a74">柏油的周报-007期</a><br><a target="_blank" rel="noopener" href="https://zerokei.notion.site/006-919f6625172c48a7830596d0af7d0d7e">柏油的周报-006期</a><br><a target="_blank" rel="noopener" href="https://zerokei.notion.site/005-4bbaf937c6d44ec985d654bcdeb8003b">柏油的周报-005期</a><br><a target="_blank" rel="noopener" href="https://zerokei.notion.site/004-c1545a738cf14321969330b1aae11b24">柏油的周报-004期</a><br><a target="_blank" rel="noopener" href="https://zerokei.notion.site/003-f4bb90e7f936489ebe3725719350d743">柏油的周报-003期</a><br><a target="_blank" rel="noopener" href="https://zerokei.notion.site/002-af24cc9d2b754ff6b4ee9c28e16e18a7">柏油的周报-002期</a><br><a target="_blank" rel="noopener" href="https://zerokei.notion.site/001-9235ea64241c40b4a082f1e08ccd7bcd">柏油的周报-001期</a></p>
-<h1 id="My-Github"><a href="#My-Github" class="headerlink" title="My Github"></a>My Github</h1><p>这是我的<a target="_blank" rel="noopener" href="https://github.com/Zerokei">github</a><br>欢迎follow我和star我的项目~</p>
-
-      
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/03/02/hello-world/" rel="prev" title="Hello World">
+      <i class="fa fa-chevron-left"></i> Hello World
+    </a></div>
+      <div class="post-nav-item"></div>
     </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
       </footer>
+    
   </article>
   
   
-  
-
-
   
 
 
@@ -353,6 +319,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFWrite-Buffers"><span class="nav-number">1.</span> <span class="nav-text">什么是Write Buffers</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Write-Buffers%E7%9A%84%E7%BC%BA%E9%99%B7"><span class="nav-number">2.</span> <span class="nav-text">Write Buffers的缺陷</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Merging-Write-Buffers"><span class="nav-number">3.</span> <span class="nav-text">Merging Write Buffers</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Merging-Write-Buffers%E7%9A%84%E9%99%90%E5%88%B6"><span class="nav-number">4.</span> <span class="nav-text">Merging Write Buffers的限制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95"><span class="nav-number">5.</span> <span class="nav-text">测试</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91"><span class="nav-number">5.1.</span> <span class="nav-text">编译</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%A7%E8%A1%8C"><span class="nav-number">5.2.</span> <span class="nav-text">执行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E6%8B%9F"><span class="nav-number">5.3.</span> <span class="nav-text">模拟</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E6%8B%9F%E7%BB%93%E6%9E%9C"><span class="nav-number">5.4.</span> <span class="nav-text">模拟结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="nav-number">5.5.</span> <span class="nav-text">参考文献</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%8C%E6%95%B4%E4%BB%A3%E7%A0%81"><span class="nav-number">5.6.</span> <span class="nav-text">完整代码</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
