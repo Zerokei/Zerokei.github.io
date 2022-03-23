@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title></title>
+    <link rel="stylesheet" href="dist/reveal.css" />
+    <link rel="stylesheet" href="dist/theme/night.css" id="theme" />
+    <link rel="stylesheet" href="plugin/highlight/monokai.css" />
+	<link rel="stylesheet" href="css/layout.css" />
+	<link rel="stylesheet" href="plugin/customcontrols/style.css">
+
+
+    <script defer src="dist/fontawesome/all.min.js"></script>
+
+	<script type="text/javascript">
+		var forgetPop = true;
+		function onPopState(event) {
+			if(forgetPop){
+				forgetPop = false;
+			} else {
+				parent.postMessage(event.target.location.href, "app://obsidian.md");
+			}
+        }
+		window.onpopstate = onPopState;
+		window.onmessage = event => {
+			if(event.data == "reload"){
+				window.document.location.reload();
+			}
+			forgetPop = true;
+		}
+
+		function fitElements(){
+			const itemsToFit = document.getElementsByClassName('fitText');
+			for (const item in itemsToFit) {
+				if (Object.hasOwnProperty.call(itemsToFit, item)) {
+					var element = itemsToFit[item];
+					fitElement(element,1, 1000);
+					element.classList.remove('fitText');
+				}
+			}
+		}
+
+		function fitElement(element, start, end){
+
+			const size = (end + start) / 2;
+			element.style.fontSize = `${size}px`;
+
+			if(Math.abs(start - end) < 1){
+				return;
+			}
+
+			if(element.scrollHeight > element.offsetHeight){
+				fitElement(element, start, size);
+			} else {
+				fitElement(element, size, end);
+			}		
+		}
+
+
+		document.onreadystatechange = () => {
+			fitElements();
+			if (document.readyState === 'complete') {
+				if (window.location.href.indexOf("?export") != -1){
+					parent.postMessage(event.target.location.href, "app://obsidian.md");
+				}
+				if (window.location.href.indexOf("print-pdf") != -1){
+					let stateCheck = setInterval(() => {
+						clearInterval(stateCheck);
+						window.print();
+					}, 250);
+				}
+			}
+	};
+
+
+        </script>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section  data-markdown><script type="text/template">
+# 1 THEORY</script></section><section ><section data-markdown><script type="text/template">### 1.1 What is write buffers?</script></section><section data-markdown><script type="text/template"><p style="line-height: 0" class="reset-paragraph"><img src="https://s2.loli.net/2022/03/23/DqouTH7zBi32ch5.png" alt="" ></img></p>
+
+</script></section><section data-markdown><script type="text/template"><p style="line-height: 0" class="reset-paragraph"><img src="https://s2.loli.net/2022/03/23/yQs6bR7cCF3V5oZ.png" alt="" ></img></p>
+
+</script></section><section data-markdown><script type="text/template"><p style="line-height: 0" class="reset-paragraph"><img src="https://s2.loli.net/2022/03/23/5RqV4nCiwDdLIHk.png" alt="" ></img></p>
+
+</script></section></section><section ><section data-markdown><script type="text/template">### 1.2 The *shortcoming* of write buffers</script></section><section data-markdown><script type="text/template"><p style="line-height: 0" class="reset-paragraph"><img src="https://s2.loli.net/2022/03/23/UpN9P16jSLtGOsT.png" alt="" ></img></p>
+</script></section><section data-markdown><script type="text/template">- improve its capacity  
+<p style="line-height: 0" class="reset-paragraph"><img src="https://s2.loli.net/2022/03/23/WAXyg7q9D6c8dNp.png" alt="" class="fragment"></img></p>
+</script></section><section data-markdown><script type="text/template">- What if all of the block is full?
+<p style="line-height: 0" class="reset-paragraph"><img src="https://s2.loli.net/2022/03/23/oTiXQhPwUyqnxrM.png" alt="" class="fragment"></img></p>
+
+</script></section></section><section ><section data-markdown><script type="text/template">### 1.3 What is Merging Write Buffers?
+</script></section><section data-markdown><script type="text/template">- merge blocks and improve its throughput
+<p style="line-height: 0" class="reset-paragraph"><img src="https://s2.loli.net/2022/03/23/8MqHaKLegoF1G9j.png" alt="" class="fragment"></img></p>
+
+</script></section></section><section ><section data-markdown><script type="text/template">### 1.4 limits
+- sequential address<!-- .element: class="fragment" --> ![](https://s2.loli.net/2022/03/23/dC6Xmo8RWH4hgPj.png)
+<!-- .element: class="fragment" --></script></section><section data-markdown><script type="text/template">- the lines of write buffers<!-- .element: class="fragment" -->![](https://s2.loli.net/2022/03/23/tudFAMrXEpZgcNw.png)
+<!-- .element: class="fragment" --></script></section></section><section  data-markdown><script type="text/template"># 2 TEST</script></section><section ><section data-markdown><script type="text/template">### 2.1 code</script></section><section data-markdown><script type="text/template">##### fun1
+```c++
+ uint64_t i = size;
+ int id;
+ while(i--){
+	 id = (int)i & mask;
+	 a[id] = i;b[id] = i;
+	 c[id] = i;d[id] = i;
+	 e[id] = i;f[id] = i;
+	 g[id] = i;h[id] = i;
+ }
+```
+##### fun2
+```c++
+ uint64_t i = size;
+ int id;
+ while(i--){
+	 id = (int)i & mask;
+	 a[id] = i;b[id] = i;
+	 c[id] = i;d[id] = i;
+ }
+ i = size;
+ while(i--){
+	 id = (int)i & mask;
+	 e[id] = i;f[id] = i;
+	 g[id] = i;h[id] = i;
+ }
+ ```</script></section></section><section ><section data-markdown><script type="text/template">### 2.2 compile
+Use O1 to ensure the optimized assembly code<!-- .element: class="fragment" -->
+```shell
+g++ -O1 test.cpp
+```
+<!-- .element: class="fragment" -->
+objdump it<!-- .element: class="fragment" -->
+```shell
+objdump -d a.out > dump.asm
+```
+<!-- .element: class="fragment" --></script></section><section data-markdown><script type="text/template">
+<p style="line-height: 0" class="reset-paragraph"><img src="https://s2.loli.net/2022/03/23/gX6xWRaFVwsqLnI.png" alt="" ></img></p>
+
+</script></section></section><section  data-markdown><script type="text/template">### 2.3 execute
+```bash
+./a.out
+```
+<!-- .element: class="fragment" -->
+
+only one core<!-- .element: class="fragment" -->
+<p style="line-height: 0" class="reset-paragraph"><img src="https://s2.loli.net/2022/03/23/CbLE56fNrtB3WgF.png" alt="" class="fragment"></img></p>
+
+
+</script></section><section ><section data-markdown><script type="text/template">### 2.5 simulation</script></section><section data-markdown><script type="text/template">##### 2.5.1 For Fun1</script></section><section data-markdown><script type="text/template">```c++
+ while(i--){
+	 id = (int)i & mask;
+	 a[id] = i;b[id] = i;
+	 c[id] = i;d[id] = i;
+	 e[id] = i;f[id] = i;
+	 g[id] = i;h[id] = i;
+ }
+```
+<p style="line-height: 0" class="reset-paragraph"><img src="https://s2.loli.net/2022/03/23/XCVxvbY8u4rtwl5.png" alt="" ></img></p>
+</script></section><section data-markdown><script type="text/template">```c++
+ while(i--){
+	 id = (int)i & mask;
+	 a[id] = i;b[id] = i;
+	 c[id] = i;d[id] = i;
+	 e[id] = i;f[id] = i;
+	 g[id] = i;h[id] = i;
+ }
+```
+<p style="line-height: 0" class="reset-paragraph"><img src="https://s2.loli.net/2022/03/23/7QPVfKxqMI1wF2U.png" alt="" ></img></p>
+</script></section><section data-markdown><script type="text/template">```c++
+ while(i--){
+	 id = (int)i & mask;
+	 a[id] = i;b[id] = i;
+	 c[id] = i;d[id] = i;
+	 e[id] = i;f[id] = i;
+	 g[id] = i;h[id] = i;
+ }
+```
+<p style="line-height: 0" class="reset-paragraph"><img src="https://s2.loli.net/2022/03/23/EuQ3inqwABKaH5F.png" alt="" ></img></p>
+</script></section><section data-markdown><script type="text/template">```c++
+ while(i--){
+	 id = (int)i & mask;
+	 a[id] = i;b[id] = i;
+	 c[id] = i;d[id] = i;
+	 e[id] = i;f[id] = i;
+	 g[id] = i;h[id] = i;
+ }
+```
+<p style="line-height: 0" class="reset-paragraph"><img src="https://s2.loli.net/2022/03/23/Shr5zGov8UpDMeJ.png" alt="" ></img></p>
+</script></section><section data-markdown><script type="text/template">```c++
+ while(i--){
+	 id = (int)i & mask;
+	 a[id] = i;b[id] = i;
+	 c[id] = i;d[id] = i;
+	 e[id] = i;f[id] = i;
+	 g[id] = i;h[id] = i;
+ }
+```
+<p style="line-height: 0" class="reset-paragraph"><img src="https://s2.loli.net/2022/03/23/lyM4Q6pWTCO8Ajb.png" alt="" ></img></p>
+</script></section><section data-markdown><script type="text/template">##### 2.5.2 For Fun2</script></section><section data-markdown><script type="text/template">```c++
+ while(i--){
+	 id = (int)i & mask;
+	 a[id] = i;b[id] = i;
+	 c[id] = i;d[id] = i;
+ }
+ ```
+<p style="line-height: 0" class="reset-paragraph"><img src="https://s2.loli.net/2022/03/23/XCVxvbY8u4rtwl5.png" alt="" ></img></p>
+</script></section><section data-markdown><script type="text/template">```c++
+ while(i--){
+	 id = (int)i & mask;
+	 a[id] = i;b[id] = i;
+	 c[id] = i;d[id] = i;
+ }
+ ```
+<p style="line-height: 0" class="reset-paragraph"><img src="https://s2.loli.net/2022/03/23/qRkQMn9cibAwJTo.png" alt="" ></img></p>
+</script></section><section data-markdown><script type="text/template">```c++
+ while(i--){
+	 id = (int)i & mask;
+	 a[id] = i;b[id] = i;
+	 c[id] = i;d[id] = i;
+ }
+ ```
+<p style="line-height: 0" class="reset-paragraph"><img src="https://s2.loli.net/2022/03/23/HtiTd69JrEZgVme.png" alt="" ></img></p>
+</script></section><section data-markdown><script type="text/template">```c++
+ while(i--){
+	 id = (int)i & mask;
+	 a[id] = i;b[id] = i;
+	 c[id] = i;d[id] = i;
+ }
+ ```
+<p style="line-height: 0" class="reset-paragraph"><img src="https://s2.loli.net/2022/03/23/zHqWIGnZ8aLkXto.png" alt="" ></img></p>
+</script></section><section data-markdown><script type="text/template">```c++
+ while(i--){
+	 id = (int)i & mask;
+	 a[id] = i;b[id] = i;
+	 c[id] = i;d[id] = i;
+ }
+ ```
+
+<p style="line-height: 0" class="reset-paragraph"><img src="https://s2.loli.net/2022/03/23/cIoskliCmMpbFHq.png" alt="" ></img></p>
+</script></section></section><section  data-markdown><script type="text/template">### 2.4 result
+```shell
+(8)9.34549                                                      
+(44)3.75535                                              
+(2222)4.18219                      
+(62)6.1677 
+```</script></section><section  data-markdown><script type="text/template"># Q&A</script></section></div>
+    </div>
+
+    <script src="dist/reveal.js"></script>
+
+    <script src="plugin/markdown/markdown.js"></script>
+    <script src="plugin/highlight/highlight.js"></script>
+    <script src="plugin/zoom/zoom.js"></script>
+    <script src="plugin/notes/notes.js"></script>
+    <script src="plugin/math/math.js"></script>
+	<script src="plugin/mermaid/mermaid.js"></script>
+	<script src="plugin/customcontrols/plugin.js"></script>
+
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        plugins: [
+          RevealMarkdown,
+          RevealHighlight,
+          RevealZoom,
+          RevealNotes,
+          RevealMath.MathJax3,
+		  RevealMermaid,
+		  RevealCustomControls,
+        ],
+
+		mathjax3: {
+			mathjax: 'plugin/math/mathjax/tex-mml-chtml.js',
+		},
+
+		customcontrols: {
+			controls: [
+			]
+		},
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal().getQueryHash() || {};
+
+      var options = extend(defaultOptions, {"width":960,"height":700,"margin":0.04,"controls":true,"progress":true,"slideNumber":true,"transition":"slide","transitionSpeed":"default"}, queryOptions);
+    </script>
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+</html>
