@@ -23,15 +23,29 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Zerokei&#39;s Personal Site">
-<meta property="og:url" content="http://example.com/tags/architecture/index.html">
+  <meta name="description" content="Stack Migration什么是ROPROP 全称 Return-Oriented Programming，允许攻击者在程序开启一些保护措施时，劫取控制权。ROP 一般会利用程序现有的代码片段或链接库内的代码片段作为gadget，并拼凑这些gadget以达成劫取控制流的目的。 ret2libc顾名思义，该技术利用了libc内常见的功能函数和代码片段，如system,&#x2F;bin&#x2F;sh等，并可利用这">
+<meta property="og:type" content="article">
+<meta property="og:title" content="stack migration">
+<meta property="og:url" content="http://example.com/2022/04/03/ROP/index.html">
 <meta property="og:site_name" content="Zerokei&#39;s Personal Site">
+<meta property="og:description" content="Stack Migration什么是ROPROP 全称 Return-Oriented Programming，允许攻击者在程序开启一些保护措施时，劫取控制权。ROP 一般会利用程序现有的代码片段或链接库内的代码片段作为gadget，并拼凑这些gadget以达成劫取控制流的目的。 ret2libc顾名思义，该技术利用了libc内常见的功能函数和代码片段，如system,&#x2F;bin&#x2F;sh等，并可利用这">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/rop/stk_s.png">
+<meta property="og:image" content="http://example.com/images/rop/stk1.png">
+<meta property="og:image" content="http://example.com/images/rop/stk2.png">
+<meta property="og:image" content="http://example.com/images/rop/stk3.png">
+<meta property="og:image" content="http://example.com/images/rop/stk4.png">
+<meta property="og:image" content="http://example.com/images/rop/stk5.png">
+<meta property="og:image" content="http://example.com/images/rop/stk6.png">
+<meta property="og:image" content="http://example.com/images/rop/stk7.png">
+<meta property="article:published_time" content="2022-04-03T06:54:39.075Z">
+<meta property="article:modified_time" content="2022-04-09T03:06:27.840Z">
 <meta property="article:author" content="Zerokei">
+<meta property="article:tag" content="pwn">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/rop/stk_s.png">
 
-<link rel="canonical" href="http://example.com/tags/architecture/">
+<link rel="canonical" href="http://example.com/2022/04/03/ROP/">
 
 
 <script id="page-configurations">
@@ -39,12 +53,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'en'
   };
 </script>
 
-  <title>Tag: architecture | Zerokei's Personal Site</title>
+  <title>stack migration | Zerokei's Personal Site</title>
   
 
 
@@ -149,51 +163,137 @@
         <div class="content-wrap">
           
 
-          <div class="content tag">
+          <div class="content post posts-expand">
             
 
+    
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h2 class="collection-header">architecture
-          <small>Tag</small>
-        </h2>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/04/03/ROP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Zerokei">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Zerokei's Personal Site">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          stack migration
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-04-03 14:54:39" itemprop="dateCreated datePublished" datetime="2022-04-03T14:54:39+08:00">2022-04-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-04-09 11:06:27" itemprop="dateModified" datetime="2022-04-09T11:06:27+08:00">2022-04-09</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-users"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="firestore-visitors-count"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2022</span>
+        <h1 id="Stack-Migration"><a href="#Stack-Migration" class="headerlink" title="Stack Migration"></a>Stack Migration</h1><h2 id="什么是ROP"><a href="#什么是ROP" class="headerlink" title="什么是ROP"></a>什么是ROP</h2><p>ROP 全称 Return-Oriented Programming，允许攻击者在程序开启一些保护措施时，劫取控制权。<br>ROP 一般会利用程序现有的代码片段或链接库内的代码片段作为<code>gadget</code>，并拼凑这些gadget以达成劫取控制流的目的。</p>
+<h2 id="ret2libc"><a href="#ret2libc" class="headerlink" title="ret2libc"></a>ret2libc</h2><p>顾名思义，该技术利用了libc内常见的功能函数和代码片段，如<code>system</code>,<code>/bin/sh</code>等，并可利用这些片段调用system(“&#x2F;bin&#x2F;sh”)以劫取控制流。<br>当然，libc并不是能够轻易利用的，如何知道目标程序使用的libc库的版本，如何获取libc库在程序中的加载位置，都需要通过额外的hack方式获取。</p>
+<h2 id="stack-migration"><a href="#stack-migration" class="headerlink" title="stack migration"></a>stack migration</h2><p>当然，本文想要谈论的仅仅是如何在有限的溢出条件下构建rop链，这也是返回溢出攻击下的关键一步。<br>举个例子，如果有一个函数，它可以溢出的空间仅仅只有0x10 byte(64位系统)，那么只有栈空间和返回地址可以控制。<br>但这并不意味着，我们不能对这个程序进行有效的ROP攻击，以x86-64为例，</p>
+<ol>
+<li>首先我们需要找到可以写入的地址空间（如bss段）</li>
+<li>将rbp转移到此地址空间中</li>
+<li>不断移动rbp，并不断将返回地址指向读取函数</li>
+<li>如此往复，将rop链拼接在一起。</li>
+</ol>
+<h2 id="具体例子"><a href="#具体例子" class="headerlink" title="具体例子"></a>具体例子</h2><p>假设有函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">fun</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="type">int</span> A[<span class="number">0x10</span>];</span><br><span class="line">    read(A, <span class="number">0x20</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>因为只有0x10大小的可利用溢出空间，故必须需要多次read。<br>但是在重复读取的时候，发现rsp和rbp会不可避免地对齐，进而影响read的溢出操作。<br><img src="/../images/rop/stk_s.png" alt="pic|100"><br>有一个解决方案就是将rsp与rbp分开。分开的方式有蛮多种。其中一种就是另开一个buf区域，在原buf区域读取后，将<br>rbp迁移到第二个buf区域，这样就可以人为地将rbp和rsp分开，以避免read溢出被干扰的情形。<br>具体实现方案如下：</p>
+<ol>
+<li>通过第一次read，将rbp迁移到可控的内存区域buf1。<br><img src="/../images/rop/stk1.png"></li>
+<li>通过第二次read，将rbp迁移到buf2(第二个可控内存区域)，同时在buf1处首次载入两个字的有效payload。<br><img src="/../images/rop/stk2.png"></li>
+<li>通过第三次read，将rsp”勾引”到buf2，为下次在buf1正常载入payload做准备。<br><img src="/../images/rop/stk3.png"></li>
+<li>通过第四次read，在原载入的两个字有效的payload后，再接上两个字。<br><img src="/../images/rop/stk4.png"></li>
+<li>如此循环往复，就可以不断地在指定空间中填入我们想要的数据。<br><img src="/../images/rop/stk5.png"></li>
+<li>至于如何执行载入的payload，需要对载入的数据进行一些小小的修改。如最后返回地址设成leave所在地址，以便将rsp设为rbp指向的位置，但同时会有<code>pop rbp</code>，为保证后续操作的稳定，在payload的开头应放置合理的数据(如buf1的地址)，以保证rbp的数值一直合法。<br><img src="/../images/rop/stk6.png"><br><img src="/../images/rop/stk7.png"></li>
+</ol>
+
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+    
+    
+    
+        
 
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2022-03-23T15:46:31+08:00"
-              content="2022-03-23">
-          03-23
-        </time>
-      </div>
+  <div class="followme">
+    <p>Welcome to my other publishing channels</p>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2022/03/23/merging-write-buffers/" itemprop="url">
-            <span itemprop="name">Merging Write Buffers</span>
+    <div class="social-list">
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
           </a>
-      </div>
-
-    </header>
-  </article>
-
+        </div>
     </div>
   </div>
-  
-  
-  
 
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/pwn/" rel="tag"><i class="fa fa-tag"></i> pwn</a>
+          </div>
+
+        
+  <div class="post-widgets">
+    <div class="wp_rating">
+      <div id="wpac-rating"></div>
+    </div>
+  </div>
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/03/23/merging-write-buffers/" rel="prev" title="Merging Write Buffers">
+      <i class="fa fa-chevron-left"></i> Merging Write Buffers
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
   
 
 
@@ -246,6 +346,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Stack-Migration"><span class="nav-number">1.</span> <span class="nav-text">Stack Migration</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFROP"><span class="nav-number">1.1.</span> <span class="nav-text">什么是ROP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ret2libc"><span class="nav-number">1.2.</span> <span class="nav-text">ret2libc</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#stack-migration"><span class="nav-number">1.3.</span> <span class="nav-text">stack migration</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B7%E4%BD%93%E4%BE%8B%E5%AD%90"><span class="nav-number">1.4.</span> <span class="nav-text">具体例子</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
