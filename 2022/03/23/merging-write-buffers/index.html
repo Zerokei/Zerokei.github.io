@@ -52,7 +52,7 @@
 <meta property="og:image" content="https://s2.loli.net/2022/03/23/zHqWIGnZ8aLkXto.png">
 <meta property="og:image" content="https://s2.loli.net/2022/03/23/cIoskliCmMpbFHq.png">
 <meta property="article:published_time" content="2022-03-23T07:46:31.170Z">
-<meta property="article:modified_time" content="2022-04-09T03:09:58.350Z">
+<meta property="article:modified_time" content="2022-04-09T03:27:02.736Z">
 <meta property="article:author" content="Zerokei">
 <meta property="article:tag" content="architecture">
 <meta name="twitter:card" content="summary">
@@ -213,7 +213,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-04-09 11:09:58" itemprop="dateModified" datetime="2022-04-09T11:09:58+08:00">2022-04-09</time>
+                <time title="Modified: 2022-04-09 11:27:02" itemprop="dateModified" datetime="2022-04-09T11:27:02+08:00">2022-04-09</time>
               </span>
 
           
@@ -234,9 +234,9 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="什么是Write-Buffers"><a href="#什么是Write-Buffers" class="headerlink" title="什么是Write Buffers"></a>什么是Write Buffers</h1><p>假设我们有数据需要写入，由运算单元传递至L1 Cache，但是L1 Cache里面没有储存该内容（即miss了），那么就要去L2 Cache中找。<br>若L2 Cache中仍然没有，则需要访问更后面的存储结构。<br><img src="https://s2.loli.net/2022/03/23/DqouTH7zBi32ch5.png"> </p>
+        <h1 id="什么是Write-Buffers"><a href="#什么是Write-Buffers" class="headerlink" title="什么是Write Buffers"></a>什么是Write Buffers</h1><p>假设我们有数据需要写入，由运算单元传递至L1 Cache，但是L1 Cache里面没有储存该内容（即miss了），那么就要去L2 Cache中找。<br>若L2 Cache中仍然没有，则需要访问更后面的存储结构。</p>
 <span id="more"></span>
-<p>这样会造成十分漫长的等待。<br><img src="https://s2.loli.net/2022/03/23/yQs6bR7cCF3V5oZ.png"><br>但是如果在L1 Cache和L2 Cache中增设一个write buffer，则当L1 Cache将写入数据写进write buffer后，即可不停转地进行下面的任务。<br><img src="https://s2.loli.net/2022/03/23/5RqV4nCiwDdLIHk.png"> </p>
+<p><img src="https://s2.loli.net/2022/03/23/DqouTH7zBi32ch5.png"><br>这样会造成十分漫长的等待。<br><img src="https://s2.loli.net/2022/03/23/yQs6bR7cCF3V5oZ.png"><br>但是如果在L1 Cache和L2 Cache中增设一个write buffer，则当L1 Cache将写入数据写进write buffer后，即可不停转地进行下面的任务。<br><img src="https://s2.loli.net/2022/03/23/5RqV4nCiwDdLIHk.png"> </p>
 <h1 id="Write-Buffers的缺陷"><a href="#Write-Buffers的缺陷" class="headerlink" title="Write Buffers的缺陷"></a>Write Buffers的缺陷</h1><p>其实我们可以很快地发现，Write Buffers本身并不能很好地解决写入等待的问题，因为若有频繁的写入操作，Write Buffers可能会被很快地填满。<br><img src="https://s2.loli.net/2022/03/23/UpN9P16jSLtGOsT.png"><br>我们或许可以尝试增大它的容量。<br><img src="https://s2.loli.net/2022/03/23/WAXyg7q9D6c8dNp.png"><br>但是可能在面对大量的写入操作时，仍然不能起到一个很好的效果。<br><img src="https://s2.loli.net/2022/03/23/oTiXQhPwUyqnxrM.png"></p>
 <h1 id="Merging-Write-Buffers"><a href="#Merging-Write-Buffers" class="headerlink" title="Merging Write Buffers"></a>Merging Write Buffers</h1><p>这时，我们或许可以尝试合并Write Buffers。即增大它的吞吐量（严格的来说是单次传递到下一层的数据量）<br><img src="https://s2.loli.net/2022/03/23/8MqHaKLegoF1G9j.png"><br>清空上面的第一行，只需要一次就行（因为他们被合并成了一条数据）<br>而清空第三行可能就需要四次。<br>特别是当存在循环写入的时候，我们的合并写入可以起到关键性的优化。（在后面的例子中会讲到）</p>
 <h1 id="Merging-Write-Buffers的限制"><a href="#Merging-Write-Buffers的限制" class="headerlink" title="Merging Write Buffers的限制"></a>Merging Write Buffers的限制</h1><ol>
@@ -300,10 +300,7 @@
 
         
     <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2022/03/02/hello-world/" rel="prev" title="Hello World">
-      <i class="fa fa-chevron-left"></i> Hello World
-    </a></div>
+      <div class="post-nav-item"></div>
       <div class="post-nav-item">
     <a href="/2022/04/03/ROP/" rel="next" title="stack migration">
       stack migration <i class="fa fa-chevron-right"></i>
@@ -380,7 +377,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-count">2</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
