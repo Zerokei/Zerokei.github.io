@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Zerokei&#39;s Personal Site</title>
+  <icon>http://example.com/icon.png</icon>
+  
+  <link href="http://example.com/atom.xml" rel="self"/>
+  
+  <link href="http://example.com/"/>
+  <updated>2022-04-09T03:38:53.790Z</updated>
+  <id>http://example.com/</id>
+  
+  <author>
+    <name>Zerokei</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Stack Migration</title>
+    <link href="http://example.com/2022/04/03/stack-migration/"/>
+    <id>http://example.com/2022/04/03/stack-migration/</id>
+    <published>2022-04-03T06:54:39.075Z</published>
+    <updated>2022-04-09T03:38:53.790Z</updated>
+    
+    
+    <summary type="html">&lt;h1 id=&quot;Stack-Migration&quot;&gt;&lt;a href=&quot;#Stack-Migration&quot; class=&quot;headerlink&quot; title=&quot;Stack Migration&quot;&gt;&lt;/a&gt;Stack Migration&lt;/h1&gt;&lt;h2 id=&quot;什么是ROP&quot;&gt;&lt;a href=&quot;#什么是ROP&quot; class=&quot;headerlink&quot; title=&quot;什么是ROP&quot;&gt;&lt;/a&gt;什么是ROP&lt;/h2&gt;&lt;p&gt;ROP 全称 Return-Oriented Programming，允许攻击者在程序开启一些保护措施时，劫取控制权。&lt;br&gt;ROP 一般会利用程序现有的代码片段或链接库内的代码片段作为&lt;code&gt;gadget&lt;/code&gt;，并拼凑这些gadget以达成劫取控制流的目的。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="security" scheme="http://example.com/categories/security/"/>
+    
+    
+    <category term="pwn" scheme="http://example.com/tags/pwn/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Merging Write Buffers</title>
+    <link href="http://example.com/2022/03/23/merging-write-buffers/"/>
+    <id>http://example.com/2022/03/23/merging-write-buffers/</id>
+    <published>2022-03-23T07:46:31.170Z</published>
+    <updated>2022-04-09T03:47:45.823Z</updated>
+    
+    
+    <summary type="html">&lt;h1 id=&quot;Merging-Write-Buffers&quot;&gt;&lt;a href=&quot;#Merging-Write-Buffers&quot; class=&quot;headerlink&quot; title=&quot;Merging Write Buffers&quot;&gt;&lt;/a&gt;Merging Write Buffers&lt;/h1&gt;&lt;h2 id=&quot;什么是Write-Buffers&quot;&gt;&lt;a href=&quot;#什么是Write-Buffers&quot; class=&quot;headerlink&quot; title=&quot;什么是Write Buffers&quot;&gt;&lt;/a&gt;什么是Write Buffers&lt;/h2&gt;&lt;p&gt;假设我们有数据需要写入，由运算单元传递至L1 Cache，但是L1 Cache里面没有储存该内容（即miss了），那么就要去L2 Cache中找。&lt;br&gt;若L2 Cache中仍然没有，则需要访问更后面的存储结构。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="architecture" scheme="http://example.com/categories/architecture/"/>
+    
+    
+    <category term="cache" scheme="http://example.com/tags/cache/"/>
+    
+  </entry>
+  
+</feed>
